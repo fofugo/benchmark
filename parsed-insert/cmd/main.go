@@ -1,9 +1,9 @@
 package main
 
 import (
-	"benchmark-dir/parsed-insert/data"
-	"benchmark-dir/parsed-insert/notparsing"
-	"benchmark-dir/parsed-insert/parsing"
+	"benchmark/parsed-insert/data"
+	"benchmark/parsed-insert/notparsing"
+	"benchmark/parsed-insert/parsing"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -58,9 +58,9 @@ func main() {
 		Dialect:  "mysql",
 		Host:     "127.0.0.1",
 		Port:     "3306",
-		Username: "dongjulee",
+		Username: "root",
 		Password: "djfrnf081@",
-		Name:     "mysql",
+		Name:     "benchmark",
 		Charset:  "utf8",
 	}
 	db := DB{}
