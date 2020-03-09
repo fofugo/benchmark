@@ -67,12 +67,22 @@ func main() {
 	if err := db.Initialize(dbConfig); err != nil {
 		panic(err)
 	}
-
-	startTime := time.Now()
-	doParseInsert(db.Db)
-	//doNotParseInsert(db.Db)
-	elapsedTime := time.Since(startTime)
-	fmt.Printf("실행시간: %v\n", elapsedTime.Seconds())
+	for i := 0; i < 20; i++ {
+		startTime := time.Now()
+		doParseInsert(db.Db)
+		//doNotParseInsert(db.Db)
+		elapsedTime := time.Since(startTime)
+		fmt.Printf("parse 실행시간: %v\n", elapsedTime.Seconds())
+		time.Sleep(10 * time.Second)
+	}
+	for i := 0; i < 20; i++ {
+		startTime := time.Now()
+		//doParseInsert(db.Db)
+		doNotParseInsert(db.Db)
+		elapsedTime := time.Since(startTime)
+		fmt.Printf("not parse 실행시간: %v\n", elapsedTime.Seconds())
+		time.Sleep(10 * time.Second)
+	}
 }
 
 func doParseInsert(db *sql.DB) {
