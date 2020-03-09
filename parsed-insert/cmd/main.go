@@ -1,9 +1,9 @@
 package main
 
 import (
-	"benchmark-dir/parsed-insert/data"
-	"benchmark-dir/parsed-insert/notparsing"
-	"benchmark-dir/parsed-insert/parsing"
+	"benchmark/parsed-insert/data"
+	"benchmark/parsed-insert/notparsing"
+	"benchmark/parsed-insert/parsing"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -58,10 +58,10 @@ func main() {
 		Dialect:  "mysql",
 		Host:     "127.0.0.1",
 		Port:     "3306",
-		Username: "dongjulee",
-		Password: "djfrnf081@",
-		Name:     "mysql",
-		Charset:  "utf8",
+		Username: "",
+		Password: "",
+		Name:     "",
+		Charset:  "",
 	}
 	db := DB{}
 	if err := db.Initialize(dbConfig); err != nil {
@@ -72,7 +72,7 @@ func main() {
 		doParseInsert(db.Db)
 		//doNotParseInsert(db.Db)
 		elapsedTime := time.Since(startTime)
-		fmt.Printf("parse 실행시간: %v\n", elapsedTime.Seconds())
+		fmt.Printf("parse time: %v\n", elapsedTime.Seconds())
 		time.Sleep(10 * time.Second)
 	}
 	for i := 0; i < 20; i++ {
@@ -80,14 +80,14 @@ func main() {
 		//doParseInsert(db.Db)
 		doNotParseInsert(db.Db)
 		elapsedTime := time.Since(startTime)
-		fmt.Printf("not parse 실행시간: %v\n", elapsedTime.Seconds())
+		fmt.Printf("not parse time: %v\n", elapsedTime.Seconds())
 		time.Sleep(10 * time.Second)
 	}
 }
 
 func doParseInsert(db *sql.DB) {
 	stmt, _ := db.Prepare("INSERT INTO parse (time,id,type,person,number,age,country) VALUES ( ?, ?, ?, ?, ?, ?, ?)")
-	for _, log := range data.Logs {
+	for _, log := range data.LargeLogs {
 		logTemplate, _ := parsing.GetLogTemplate(log)
 		_, err := stmt.Exec(
 			logTemplate.Time,
@@ -101,12 +101,13 @@ func doParseInsert(db *sql.DB) {
 		if err != nil {
 			panic(err)
 		}
+		time.Sleep(10*time.Millisecond)
 	}
 }
 
 func doNotParseInsert(db *sql.DB) {
 	stmt, _ := db.Prepare("INSERT INTO not_parse (time,content) VALUES ( ?, ?)")
-	for _, log := range data.Logs {
+	for _, log := range data.LargeLogs {
 		logTemplate, _ := notparsing.GetLogTemplate(log)
 		_, err := stmt.Exec(
 			logTemplate.Time,
@@ -115,5 +116,6 @@ func doNotParseInsert(db *sql.DB) {
 		if err != nil {
 			panic(err)
 		}
+		time.Sleep(10*time.Millisecond)
 	}
 }
