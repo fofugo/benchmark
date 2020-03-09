@@ -1,8 +1,8 @@
 package main
 
 import (
-	"benchmark-dir/bulk-insert/data"
-	"benchmark-dir/bulk-insert/parsing"
+	"benchmark/bulk-insert/data"
+	"benchmark/bulk-insert/parsing"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -57,9 +57,9 @@ func main() {
 		Dialect:  "mysql",
 		Host:     "127.0.0.1",
 		Port:     "3306",
-		Username: "dongjulee",
+		Username: "root",
 		Password: "djfrnf081@",
-		Name:     "fofu",
+		Name:     "benchmark",
 		Charset:  "utf8",
 	}
 	db := DB{}
@@ -68,12 +68,19 @@ func main() {
 	}
 	for i := 0; i < 20; i++ {
 		startTime := time.Now()
-		//doBulkInsert(db.Db)
-		doSingleInsert(db.Db)
+		doBulkInsert(db.Db)
 		elapsedTime := time.Since(startTime)
-		fmt.Printf("parse 실행시간: %v\n", elapsedTime.Seconds())
+		fmt.Printf("bulk insert time: %v\n", elapsedTime.Seconds())
 		time.Sleep(10 * time.Second)
 	}
+	for i := 0; i < 20; i++ {
+		startTime := time.Now()
+		doSingleInsert(db.Db)
+		elapsedTime := time.Since(startTime)
+		fmt.Printf("single insert time: %v\n", elapsedTime.Seconds())
+		time.Sleep(10 * time.Second)
+	}
+	
 }
 
 func doBulkInsert(db *sql.DB) {
@@ -99,6 +106,21 @@ func doBulkInsert(db *sql.DB) {
 			bucketLogTemplates = nil
 		}
 	}
+	query := "INSERT INTO bulk_insert_table (time,id,type,person,number,age,country) VALUES"
+	for _, logTemplate := range bucketLogTemplates {
+		query += fmt.Sprintf(` ('%s', '%s', %s, '%s', '%s', %s, '%s'),`,
+			logTemplate.Time,
+			logTemplate.Head.Id,
+			getNullInteger(logTemplate.Content.Type),
+			logTemplate.Content.Person,
+			logTemplate.Content.Number,
+			getNullInteger(logTemplate.Content.Age),
+			logTemplate.Content.Country,
+		)
+	}
+	query = query[:len(query)-1]
+	_, _ = db.Exec(query)
+	bucketLogTemplates = nil
 }
 
 func doSingleInsert(db *sql.DB) {
