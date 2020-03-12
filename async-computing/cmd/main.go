@@ -8,15 +8,15 @@ import (
 )
 
 var msg = make(chan int)
-
+var computingCount int
 const (
-	computingCount = 1
-	totalComputing = 10000000000
-	iter           = 20
+	totalComputing = 50000000000
+	iter           = 10
 )
 
 func main() {
-	for t := 1; t <= 5; t++ {
+	for t := 1; t <= 10; t++ {
+		computingCount =t
 		for i := 0; i < iter; i++ {
 			ctx, cancel := context.WithCancel(context.Background())
 			wg1 := &sync.WaitGroup{}
@@ -45,16 +45,18 @@ func main() {
 			wg1.Wait()
 			elapsedTime := time.Since(startTime)
 			fmt.Printf("computingCount: %d,computing time: %v\n", t, elapsedTime.Seconds())
+			time.Sleep(5*time.Second)
 		}
 	}
 }
 
 func computingAsync(wg *sync.WaitGroup) {
 	defer wg.Done()
-	sum := 0
+	sum := 1
 	length := totalComputing / computingCount
 	for j := 0; j < length; j++ {
-		sum++
+		sum*=2
+		sum/=2
 	}
 	msg <- sum
 }

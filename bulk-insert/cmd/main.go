@@ -57,10 +57,10 @@ func main() {
 		Dialect:  "mysql",
 		Host:     "127.0.0.1",
 		Port:     "3306",
-		Username: "root",
-		Password: "djfrnf081@",
-		Name:     "benchmark",
-		Charset:  "utf8",
+		Username: "",
+		Password: "",
+		Name:     "",
+		Charset:  "",
 	}
 	db := DB{}
 	if err := db.Initialize(dbConfig); err != nil {
@@ -88,7 +88,7 @@ func doBulkInsert(db *sql.DB) {
 	for _, log := range data.Logs {
 		logTemplate, _ := parsing.GetLogTemplate(log)
 		bucketLogTemplates = append(bucketLogTemplates, logTemplate)
-		if len(bucketLogTemplates) > 50 {
+		if len(bucketLogTemplates) > 500 {
 			query := "INSERT INTO bulk_insert_table (time,id,type,person,number,age,country) VALUES"
 			for _, logTemplate := range bucketLogTemplates {
 				query += fmt.Sprintf(` ('%s', '%s', %s, '%s', '%s', %s, '%s'),`,
